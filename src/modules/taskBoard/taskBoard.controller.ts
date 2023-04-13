@@ -6,9 +6,11 @@ import {
 import {
   deleteTaskBoard,
   findTaskBoards,
+  getTaskBoard,
   patchTaskBoard,
   postTaskBoard,
 } from "./taskBoard.service";
+import { getUserId } from "../../utils/user";
 
 export async function postTaskBoardsHandler(
   request: FastifyRequest<{
@@ -18,9 +20,9 @@ export async function postTaskBoardsHandler(
 ) {
   const { title } = request.body;
 
-  const taskBoard = await postTaskBoard({ title });
+  const owner = await getUserId(request);
 
-  console.log(taskBoard);
+  const taskBoard = await postTaskBoard({ title, owner });
 
   reply.status(201).send(taskBoard);
 }
@@ -29,7 +31,9 @@ export async function getTaskBoardsHandler(
   request: FastifyRequest,
   reply: FastifyReply
 ) {
-  const taskBoards = await findTaskBoards();
+  const owner = await getUserId(request);
+
+  const taskBoards = await findTaskBoards({ owner });
 
   reply.status(200).send(taskBoards);
 }
@@ -43,6 +47,14 @@ export async function patchTaskBoardHandler(
 ) {
   const { id } = request.params;
   const { title } = request.body;
+
+  const owner = await getUserId(request);
+
+  const currentBoard = await getTaskBoard(id);
+
+  if (currentBoard?.owner !== owner) {
+    reply.status(403).send();
+  }
 
   const taskBoard = await patchTaskBoard({ id, title });
 

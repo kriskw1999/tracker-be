@@ -21,6 +21,7 @@ model Task {
 
 model TaskBoard {
   id    Int    @id @default(autoincrement())
+  owner String
   title String
   tasks Task[]
 }

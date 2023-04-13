@@ -1,12 +1,13 @@
 import { PostTaskBoardPayload } from "./taskBoard.schema";
 import prisma from "../../utils/prisma";
 
-export function postTaskBoard(input: PostTaskBoardPayload) {
-  const { title } = input;
+export function postTaskBoard(input: PostTaskBoardPayload & { owner: string }) {
+  const { title, owner } = input;
 
   return prisma.taskBoard.create({
     data: {
       title,
+      owner,
     },
     include: {
       tasks: true,
@@ -14,10 +15,13 @@ export function postTaskBoard(input: PostTaskBoardPayload) {
   });
 }
 
-export async function findTaskBoards() {
+export async function findTaskBoards({ owner }: { owner: string }) {
   return prisma.taskBoard.findMany({
     include: {
       tasks: true,
+    },
+    where: {
+      owner,
     },
   });
 }
@@ -48,6 +52,14 @@ export async function deleteTaskBoard(id: string) {
 
   // then delete the task board
   await prisma.taskBoard.delete({
+    where: {
+      id: Number(id),
+    },
+  });
+}
+
+export async function getTaskBoard(id: string) {
+  return prisma.taskBoard.findUnique({
     where: {
       id: Number(id),
     },

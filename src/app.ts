@@ -4,6 +4,7 @@ import { taskSchemas } from "./modules/task/task.schema";
 import taskBoardRoute from "./modules/taskBoard/taskBoard.route";
 import { taskBoardSchemas } from "./modules/taskBoard/taskBoard.schema";
 import cors from "@fastify/cors";
+import fastifyAuth0Verify from "fastify-auth0-verify";
 
 export const server = Fastify();
 
@@ -24,6 +25,23 @@ async function main() {
 
   await server.register(cors, {
     origin: "http://localhost:3000",
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
+  });
+
+  /**
+   * Handles auth0 verification
+   */
+  server.register(fastifyAuth0Verify, {
+    domain: process.env.AUTH_DOMAIN!,
+    secret: process.env.AUTH_SECRET!,
+  });
+
+  server.addHook("onRequest", async (request, reply) => {
+    try {
+      const token = await request.jwtVerify();
+    } catch (err) {
+      reply.send(err);
+    }
   });
 
   server.register(taskRoutes, { prefix: "/api/tasks" });
