@@ -1,13 +1,12 @@
-import { PostTaskBoardPayload } from "./taskBoard.schema";
+import {PostBookPayload} from "./book.schema";
 import prisma from "../../utils/prisma";
 
-export function postTaskBoard(input: PostTaskBoardPayload & { owner: string }) {
-  const { title, owner } = input;
+export function postBook(input: PostBookPayload) {
+  const { title } = input;
 
   return prisma.taskBoard.create({
     data: {
       title,
-      owner,
     },
     include: {
       tasks: true,
@@ -15,18 +14,15 @@ export function postTaskBoard(input: PostTaskBoardPayload & { owner: string }) {
   });
 }
 
-export async function findTaskBoards({ owner }: { owner: string }) {
+export async function findBook() {
   return prisma.taskBoard.findMany({
     include: {
       tasks: true,
     },
-    where: {
-      owner,
-    },
   });
 }
 
-export async function patchTaskBoard(input: { id: string; title: string }) {
+export async function patchBook(input: { id: string; title: string }) {
   const { id, title } = input;
 
   return prisma.taskBoard.update({
@@ -42,7 +38,7 @@ export async function patchTaskBoard(input: { id: string; title: string }) {
   });
 }
 
-export async function deleteTaskBoard(id: string) {
+export async function deleteBook(id: string) {
   // delete first all the tasks
   await prisma.task.deleteMany({
     where: {
@@ -52,14 +48,6 @@ export async function deleteTaskBoard(id: string) {
 
   // then delete the task board
   await prisma.taskBoard.delete({
-    where: {
-      id: Number(id),
-    },
-  });
-}
-
-export async function getTaskBoard(id: string) {
-  return prisma.taskBoard.findUnique({
     where: {
       id: Number(id),
     },
