@@ -3,53 +3,53 @@ import {PatchBookPayload, PostBookPayload,} from "./book.schema";
 import {deleteBook, findBook, patchBook, postBook,} from "./book.service";
 
 export async function postBookHandler(
-  request: FastifyRequest<{
-    Body: PostBookPayload;
-  }>,
-  reply: FastifyReply
+    request: FastifyRequest<{
+        Body: PostBookPayload;
+    }>,
+    reply: FastifyReply
 ) {
-  const { title } = request.body;
+    const {title, author, favorite, description, rating} = request.body;
 
 
-  const taskBoard = await postBook({ title });
+    const book = await postBook({title, author, favorite, description, rating});
 
-  reply.status(201).send(taskBoard);
+    reply.status(201).send(book);
 }
 
 export async function getBookHandler(
-  request: FastifyRequest,
-  reply: FastifyReply
+    request: FastifyRequest,
+    reply: FastifyReply
 ) {
 
-  const taskBoards = await findBook();
+    const book = await findBook();
 
-  reply.status(200).send(taskBoards);
+    reply.status(200).send(book);
 }
 
 export async function patchBookHandler(
-  request: FastifyRequest<{
-    Params: { id: string };
-    Body: PatchBookPayload;
-  }>,
-  reply: FastifyReply
+    request: FastifyRequest<{
+        Params: { id: string };
+        Body: PatchBookPayload;
+    }>,
+    reply: FastifyReply
 ) {
-  const { id } = request.params;
-  const { title } = request.body;
+    const {id} = request.params;
+    const {title} = request.body;
 
-  const taskBoard = await patchBook({ id, title });
+    const book = await patchBook({id, title});
 
-  reply.status(200).send(taskBoard);
+    reply.status(200).send(book);
 }
 
 export async function deleteBookHandler(
-  request: FastifyRequest<{
-    Params: { id: string };
-  }>,
-  reply: FastifyReply
+    request: FastifyRequest<{
+        Params: { id: string };
+    }>,
+    reply: FastifyReply
 ) {
-  const { id } = request.params;
+    const {id} = request.params;
 
-  await deleteBook(id);
+    await deleteBook(id);
 
-  reply.status(200).send();
+    reply.status(200).send();
 }

@@ -2,54 +2,40 @@ import {PostBookPayload} from "./book.schema";
 import prisma from "../../utils/prisma";
 
 export function postBook(input: PostBookPayload) {
-  const { title } = input;
+    const {title, description, favorite, author, rating} = input;
 
-  return prisma.taskBoard.create({
-    data: {
-      title,
-    },
-    include: {
-      tasks: true,
-    },
-  });
+    return prisma.book.create({
+        data: {
+            title,
+            description,
+            favorite,
+            author,
+            rating
+        },
+    });
 }
 
 export async function findBook() {
-  return prisma.taskBoard.findMany({
-    include: {
-      tasks: true,
-    },
-  });
+    return prisma.book.findMany();
 }
 
 export async function patchBook(input: { id: string; title: string }) {
-  const { id, title } = input;
+    const {id, title} = input;
 
-  return prisma.taskBoard.update({
-    where: {
-      id: Number(id),
-    },
-    data: {
-      title,
-    },
-    include: {
-      tasks: true,
-    },
-  });
+    return prisma.book.update({
+        where: {
+            id: Number(id),
+        },
+        data: {
+            title,
+        },
+    });
 }
 
 export async function deleteBook(id: string) {
-  // delete first all the tasks
-  await prisma.task.deleteMany({
-    where: {
-      taskBoardId: Number(id),
-    },
-  });
-
-  // then delete the task board
-  await prisma.taskBoard.delete({
-    where: {
-      id: Number(id),
-    },
-  });
+    await prisma.book.delete({
+        where: {
+            id: Number(id),
+        },
+    });
 }

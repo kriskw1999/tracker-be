@@ -2,7 +2,8 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-1.1.x"]
 }
 
 datasource db {
@@ -10,18 +11,11 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Task {
-  id          Int       @id @default(autoincrement())
+model Book {
+  id          Int     @id @default(autoincrement())
   title       String
-  done        Boolean   @default(false)
-  recurrent   Boolean   @default(false)
-  board       TaskBoard @relation(fields: [taskBoardId], references: [id])
-  taskBoardId Int
-}
-
-model TaskBoard {
-  id    Int    @id @default(autoincrement())
-  owner String
-  title String
-  tasks Task[]
+  description String
+  favorite    Boolean @default(false)
+  author      String
+  rating      Int     @default(0)
 }
